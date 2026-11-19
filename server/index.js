@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const Email = require('./models/Email');
 
 const app = express();
+console.log('UPDATED MAILGUARD CODE LOADED');
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
@@ -43,6 +44,18 @@ function detectSpam(text) {
   const detected = [];
   let keywordOccurrences = 0;
 
+  const abnormalPatterns = [
+    'claim prize',
+    'winner claim',
+    'urgent claim',
+    'free cash',
+    'won prize',
+    'lottery winner'
+  ];
+
+  const abnormalSequences = [];
+
+  // Check spam keyword occurrences
   for (const word of words) {
     if (spamKeywords.includes(word)) {
       keywordOccurrences++;
@@ -59,6 +72,18 @@ function detectSpam(text) {
     }
   }
 
+  // Check abnormal word sequences
+  for (let i = 0; i < words.length - 1; i++) {
+    const sequence = words[i] + ' ' + words[i + 1];
+
+    if (
+      abnormalPatterns.includes(sequence) &&
+      !abnormalSequences.includes(sequence)
+    ) {
+      abnormalSequences.push(sequence);
+    }
+  }
+
   let classification = 'Safe';
   let securityAlert = 'No suspicious patterns detected';
 
@@ -70,11 +95,18 @@ function detectSpam(text) {
     securityAlert = 'Repeated or multiple spam keywords detected';
   }
 
+  if (abnormalSequences.length > 0) {
+    classification = 'Spam';
+    state = 'q2';
+    securityAlert = 'Abnormal message sequence detected';
+  }
+
   return {
     finalState: state,
     classification,
     detectedPatterns: detected,
     keywordOccurrences,
+    abnormalSequences,
     securityAlert
   };
 }
@@ -113,6 +145,7 @@ app.post('/api/analyze', async (req, res) => {
     }
 
     const result = detectSpam(subject + ' ' + message);
+    console.log('ANALYSIS RESULT:', result);
 
     const newEmail = new Email({
       sender,

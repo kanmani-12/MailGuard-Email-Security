@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 const API_URL = 'https://mailguard-email-security.onrender.com';
-
 function App() {
   const [sender, setSender] = useState('')
   const [subject, setSubject] = useState('')
@@ -25,7 +24,7 @@ function App() {
     setDashboardLoading(true)
 
     try {
-      const response = await fetch(`${API_URL}/api/dashboard`)
+      const response = await fetch(`${API_URL}/api/dashboard`);
       const data = await response.json()
 
       if (!response.ok) {
@@ -65,12 +64,13 @@ function App() {
       }
 
       setResult({
-        classification: data.classification,
-        detected: data.detectedPatterns || [],
-        finalState: data.finalState,
-        keywordOccurrences: data.keywordOccurrences,
-        securityAlert: data.securityAlert
-      })
+  classification: data.classification,
+  detected: data.detectedPatterns || [],
+  finalState: data.finalState,
+  keywordOccurrences: data.keywordOccurrences,
+  abnormalSequences: data.abnormalSequences || [],
+  securityAlert: data.securityAlert
+})
 
       await loadDashboard()
 
@@ -279,6 +279,12 @@ function App() {
                 {result.securityAlert || 'No suspicious patterns detected'}
               </strong>
             </p>
+            {result.abnormalSequences?.length > 0 && (
+  <p>
+    Abnormal Sequences:{' '}
+    <strong>{result.abnormalSequences.join(', ')}</strong>
+  </p>
+)}
 
           </section>
         )}
