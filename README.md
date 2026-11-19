@@ -30,8 +30,8 @@ MailGuard is a web-based email security system that analyzes email content and i
 
 ## Classification
 - **Safe (q0):** No spam keywords detected.
-- **Suspicious (q1):** One distinct spam keyword detected.
-- **Spam (q2):** Two or more distinct spam keywords detected.
+- **Suspicious (q1):** Exactly one spam keyword occurrence detected.
+- **Spam (q2):** Two or more distinct spam keywords detected, including repeated keywords.
 
 ## Repository
 [GitHub – MailGuard](https://github.com/kanmani-12/MailGuard-Email-Security)
