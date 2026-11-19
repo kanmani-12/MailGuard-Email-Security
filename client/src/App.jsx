@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react'
+const API_URL = 'https://mailguard-email-security.onrender.com';
 import './App.css'
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/dashboard'
+        'https://mailguard-email-security.onrender.com/api/dashboard'
       )
 
       const data = await response.json()
@@ -50,7 +51,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/analyze', {
+      const response = await fetch('https://mailguard-email-security.onrender.com/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -90,7 +91,7 @@ function App() {
     setHistoryLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/history')
+      const response = await fetch('https://mailguard-email-security.onrender.com/api/history')
       const data = await response.json()
 
       if (!response.ok) {

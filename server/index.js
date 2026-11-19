@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Email validation
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Spam keywords
@@ -33,15 +34,22 @@ const spamKeywords = [
 ];
 
 // DFA: Finite Automata
+
+ // DFA: Finite Automata
 function detectSpam(text) {
   const words = text.toLowerCase().match(/[a-z]+/g) || [];
 
   let state = 'q0';
   const detected = [];
+  let keywordOccurrences = 0;
 
   for (const word of words) {
-    if (spamKeywords.includes(word) && !detected.includes(word)) {
-      detected.push(word);
+    if (spamKeywords.includes(word)) {
+      keywordOccurrences++;
+
+      if (!detected.includes(word)) {
+        detected.push(word);
+      }
 
       if (state === 'q0') {
         state = 'q1';
@@ -52,19 +60,25 @@ function detectSpam(text) {
   }
 
   let classification = 'Safe';
+  let securityAlert = 'No suspicious patterns detected';
 
   if (state === 'q1') {
     classification = 'Suspicious';
+    securityAlert = 'One spam keyword detected';
   } else if (state === 'q2') {
     classification = 'Spam';
+    securityAlert = 'Repeated or multiple spam keywords detected';
   }
 
   return {
     finalState: state,
     classification,
-    detectedPatterns: detected
+    detectedPatterns: detected,
+    keywordOccurrences,
+    securityAlert
   };
 }
+
 
 // Home API
 app.get('/', (req, res) => {
