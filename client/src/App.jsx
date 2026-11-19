@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react'
-const API_URL = 'https://mailguard-email-security.onrender.com';
 import './App.css'
+
+const API_URL = 'https://mailguard-email-security.onrender.com';
 
 function App() {
   const [sender, setSender] = useState('')
@@ -24,10 +25,7 @@ function App() {
     setDashboardLoading(true)
 
     try {
-      const response = await fetch(
-        'https://mailguard-email-security.onrender.com/api/dashboard'
-      )
-
+      const response = await fetch(`${API_URL}/api/dashboard`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -51,7 +49,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await fetch('https://mailguard-email-security.onrender.com/api/analyze', {
+      const response = await fetch(`${API_URL}/api/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -68,8 +66,10 @@ function App() {
 
       setResult({
         classification: data.classification,
-        detected: data.detectedPatterns,
-        finalState: data.finalState
+        detected: data.detectedPatterns || [],
+        finalState: data.finalState,
+        keywordOccurrences: data.keywordOccurrences,
+        securityAlert: data.securityAlert
       })
 
       await loadDashboard()
@@ -91,7 +91,7 @@ function App() {
     setHistoryLoading(true)
 
     try {
-      const response = await fetch('https://mailguard-email-security.onrender.com/api/history')
+      const response = await fetch(`${API_URL}/api/history`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -145,7 +145,6 @@ function App() {
         {/* Dashboard Section */}
 
         <section className="dashboard">
-
           <h2>📊 Dashboard Overview</h2>
 
           {dashboardLoading ? (
@@ -179,7 +178,6 @@ function App() {
 
               <div className="spam-percentage">
                 <h3>Spam Detection Percentage</h3>
-
                 <p className="percentage-value">
                   {dashboard.spamPercentage}%
                 </p>
@@ -189,7 +187,6 @@ function App() {
           ) : (
             <p>Unable to load dashboard. Please check your backend.</p>
           )}
-
         </section>
 
         {/* Email Analysis Form */}
@@ -228,7 +225,6 @@ function App() {
             />
 
             <div className="buttons">
-
               <button type="submit" disabled={loading}>
                 {loading ? 'Analyzing...' : 'Analyze Email'}
               </button>
@@ -240,7 +236,6 @@ function App() {
               >
                 Clear
               </button>
-
             </div>
 
           </form>
@@ -271,15 +266,18 @@ function App() {
 
             <p>
               DFA Final State: <strong>{result.finalState}</strong>
+            </p>
 
-<p>
-  Keyword Occurrences: <strong>{result.keywordOccurrences}</strong>
-</p>
+            <p>
+              Keyword Occurrences:{' '}
+              <strong>{result.keywordOccurrences ?? 0}</strong>
+            </p>
 
-<p>
-  Security Alert: <strong>{result.securityAlert}</strong>
-</p>
-
+            <p>
+              Security Alert:{' '}
+              <strong>
+                {result.securityAlert || 'No suspicious patterns detected'}
+              </strong>
             </p>
 
           </section>
