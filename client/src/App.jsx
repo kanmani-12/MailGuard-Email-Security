@@ -271,6 +271,15 @@ function App() {
 
             <p>
               DFA Final State: <strong>{result.finalState}</strong>
+
+<p>
+  Keyword Occurrences: <strong>{result.keywordOccurrences}</strong>
+</p>
+
+<p>
+  Security Alert: <strong>{result.securityAlert}</strong>
+</p>
+
             </p>
 
           </section>
